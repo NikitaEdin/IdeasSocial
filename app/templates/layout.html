@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Base Title{% endblock %}</title>
+    {% if title %}
+        <title>Ideas - {{title}}</title>
+    {% else %}
+        <title>Ideas Page</title>
+    {% endif %}
 
 
     <!-- Fonts -->

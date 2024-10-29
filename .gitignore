@@ -10,6 +10,7 @@ ENV/
 .venv/
 .ENV/
 
+
 # Flask specific
 instance/
 *.pyc

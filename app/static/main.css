@@ -1,0 +1,174 @@
+:root {
+    --accent-colour: #269aff;
+    --accent-hover-colour: #2980B9; 
+    --accent-press-colour: #275F80;
+}
+
+/* ///////////////////// Primary Buttons ///////////////////// */
+.btn-primary {
+    background-color: var(--accent-colour) !important; 
+    border-color: var(--accent-colour) !important;
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-hover-colour) !important;
+    border-color: var(--accent-hover-colour) !important;
+}
+
+.btn-primary:active {
+    background-color: var(--accent-press-colour) !important;
+    border-color: var(--accent-press-colour) !important;
+}
+
+.btn-primary:visited {
+    background-color:  var(--accent-press-colour) !important;
+}
+
+.btn-primary.focus,
+.btn-primary:focus {
+    box-shadow:  0 0 0 0.25rem #275F80 !important;
+}
+.btn-primary:active {
+    color: #fff;
+    background-color: var(--accent-press-colour) !important; 
+    border-color: var(--accent-press-colour) !important;
+}
+
+
+
+/* /////////////////// GLOBAL ///////////////////*/
+
+
+
+/* ///////////////////// Footer alignment ///////////////////// */
+html, body {
+    height: 100%;
+    margin: 0; /* Remove default margin */
+    background-color: #F6F6F6;
+}
+
+
+
+.content {
+    flex: 1; /* Allow the content area to grow */
+}
+
+/* ///////////////////// Footer Links ///////////////////// */ 
+.footer a {
+    text-decoration: none;  
+    color: #343a40;
+    
+}
+
+.footer a:hover,
+.footer a:focus,
+.footer a:active {
+    color: #343a40;
+    text-decoration: none; 
+}
+
+
+/* Nav Bar  */
+
+.sticky-top {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+
+.navbar-scrolled {
+    transition: all 0.5s;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+}
+
+.active {
+    color: var(--green-accent) !important;
+    font-weight: 600 !important;
+}
+
+/* Profile dropdown */
+.profile-pic {
+    display: inline-block;
+    vertical-align: middle;
+    overflow: hidden;
+    border-radius: 50%;
+}
+
+.profile-pic img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+.profile-menu .dropdown-menu {
+    right: 0;
+    left: unset;
+}
+
+.profile-menu .fa-fw {
+    margin-right: 20px;
+}
+
+.toggle-change::after {
+    border-top: 0;
+    border-bottom: 0.3em solid;
+}
+
+
+
+/* /////////////////// SIDE BAR /////////////////// */
+
+.sidebar .nav-link {
+    font-size: 16px;
+    color: #6c757d; /* Default link color */
+}
+
+.sidebar .nav-link i {
+    margin-right: 10px; /* Spacing between icon and text */
+}
+
+.sidebar .nav-link:hover {
+    color: var(--accent-colour); /* Change link color on hover */
+}
+
+.nav-link {
+    color: #6c757d; /* Default color, adjust as necessary */
+    transition: color 0.3s ease;
+}
+
+/* Hover effect */
+.nav-link:hover {
+    color: var(--accent-colour);
+}
+
+
+.nav-link:hover i,
+.nav-link:active i {
+    color: var(--accent-colour);
+}
+
+/* //////////// MAIN - POSTS  //////////// */
+
+
+.card-post {
+    border-color: transparent !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+}
+
+.coming-soon-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.8); /* Adjust opacity as needed */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333; /* Color of the text */
+    font-size: 1.5em; /* Size of the text */
+    text-align: center;
+    z-index: 1; /* Ensure it appears above other content */
+}

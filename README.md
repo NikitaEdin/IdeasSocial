@@ -18,7 +18,32 @@ The project demonstrates basic user interactions such as user creation, posting,
 - Database: SQLAlchemy.
 - Deployment: Deployed locally and on given university VMs.
 
-### Prerequisites
+<hr>
 
+### Prerequisites
 - [Python 3.x](https://www.python.org/downloads/)
-- [Virtualenv](https://pypi.org/project/virtualenv/) (optional, for creating isolated environments)
+
+### Installation Steps
+Clone the repo and open in your editor of choice, preferably Visual Studio Code.
+
+Execute the following commands in the Terminal:
+- `python -m venv venv` to create a virtual environment.
+- `venv\Scripts\activate` to activate the venv.
+
+> [!NOTE]  
+> If scripts are disabled on your system, execute:<br>
+> `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Unrestricted`
+
+- `pip install -r requirements.txt` to install all dependencies.
+- Create a new file called `.env` in the root folder, and add the following:
+
+```
+SECRET_KEY=you_secret_key
+DATABASE_URL=sqlite:///site.db
+Debug=True
+```
+
+> [!TIP]  
+> Replace `your_secret_key` with your actual key.
+
+- `python run.py` - To launch the project.

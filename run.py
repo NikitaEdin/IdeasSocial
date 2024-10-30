@@ -1,4 +1,3 @@
-import os
 from app import app
 from create_db import create_database 
 

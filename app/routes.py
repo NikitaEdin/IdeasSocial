@@ -2,7 +2,7 @@ import os
 import secrets
 from flask import render_template, url_for, flash, redirect, request, abort
 from app import app, db, bcrypt
-from app.forms import RegistrationForm, LoginForm
+from app.forms import RegistrationForm, LoginForm, UpdateDisplayNameForm, UpdateEmailForm, UpdatePasswordForm, ProfilePicutreForm
 from app.models import User, Post
 from flask_login import login_user, current_user, logout_user, login_required
 
@@ -11,7 +11,7 @@ from flask_login import login_user, current_user, logout_user, login_required
 @app.route("/")
 @app.route("/home")
 def home():
-    return render_template("home.html", title='Home')
+    return render_template("home.html", title='Home', current_page='home')
 
 # Authenticaion routes#
 @app.route('/register', methods=['GET', 'POST'])
@@ -55,9 +55,125 @@ def login():
     return render_template("/auth/login.html", title='Login', form=form)
 
 
+# Settings
+@app.route("/settings", methods=['GET', 'POST'])
+@login_required
+def settings():
+    image_file = url_for('static', filename='users/DefaultUser.png')
+    if current_user.image_file:
+        image_file = url_for('static', filename='profile_images/' + current_user.image_file)
+
+
+    # Init forms
+    display_name_form = UpdateDisplayNameForm()
+    email_form = UpdateEmailForm()
+    password_form = UpdatePasswordForm()
+    profile_picture_form = ProfilePicutreForm()
+    active_form = None
+
+
+    # Handle profile pictures
+    if profile_picture_form.validate_on_submit() and 'submit_profile_picture' in request.form:
+        file = profile_picture_form.profile_picture.data
+        if file:
+            success = current_user.save_picture(file)
+            if success:
+                flash('Profile picture updated!', 'success')
+            else:
+                flash("There was an error updating your profile picture. Please try again.", 'danger')
+            
+            return redirect(url_for('settings'))
+        else:
+            flash('Something went wrong with handing the file.', 'danger')
+            return redirect(url_for('settings'))
+    elif 'submit_profile_picture' in request.form:
+        active_form = 'profile_picture'
+
+
+
+    # Handle display name update
+    if display_name_form.validate_on_submit() and 'submit_display_name' in request.form:
+        current_user.displayname = display_name_form.display_name.data
+        db.session.commit()
+        flash('Display name updated successfully!', 'success')
+        return redirect(url_for('settings'))
+    elif 'submit_display_name' in request.form:
+        active_form = 'displayname'
+    
+    # Handle email update
+    if email_form.validate_on_submit() and 'submit_email' in request.form:
+        current_user.email = email_form.email.data
+        db.session.commit()
+        flash('Email updated successfully!', 'success')
+        return redirect(url_for('settings'))
+    elif 'submit_email' in request.form:
+        active_form = 'email'
+    
+    # Handle password update
+    if 'submit_password' in request.form and password_form.validate_on_submit():
+        if current_user.check_password(password_form.current_password.data):
+            current_user.set_password(password_form.new_password.data)
+            db.session.commit()
+            flash('Password updated successfully!', 'success')
+            return redirect(url_for('settings'))
+        else:
+            flash('Current password is incorrect', 'danger')
+    elif 'submit_password' in request.form:
+        active_form = 'password'
+
+
+    return render_template("/user/settings.html", title='Settings', removeRightMenu=True, 
+                           current_page='settings', image_file=image_file,
+                           display_name_form=display_name_form,
+                           email_form = email_form,
+                           password_form = password_form,
+                           profile_picture_form=profile_picture_form,
+                           active_form = active_form)
+
+
+# Feed
+@app.route("/feed")
+def feed():
+    return render_template("/errors/coming_soon.html", removeRightMenu=True, current_page='feed')
+
+## Profile
+@app.route("/profile")
+def profile():
+    return render_template("/errors/coming_soon.html", removeRightMenu=True, current_page='profile')
+
+
+
 # Logout
 @app.route('/logout')
 def logout():
     logout_user()
     flash('Logged out.', 'success')
     return redirect(url_for('home'))
+
+
+
+
+########### ERRORS OR COMMON ###########
+@app.errorhandler(404)
+def not_found(error):
+    return render_template('/errors/404.html'), 404 
+
+
+@app.route('/coming-soon')
+def coming_soon():
+    return render_template('/errors/coming_soon.html') 
+
+
+
+########## INFORMATIONAL PAGES ###########
+@app.route("/privacy-policy")
+def privacy():
+    abort(404)
+
+@app.route("/terms-of-service")
+def terms_of_service():
+    abort(404)
+
+@app.route("/contact-us")
+def contact_us():
+    abort(404)

@@ -20,17 +20,20 @@
 
 
             <!-- Create new IDEA post -->
-
-            <h4> Share yours ideas </h4>
-            <div class="row">
-                <div class="mb-3">
-                    <textarea class="form-control" id="idea" rows="3"></textarea>
+            {% if current_user.is_authenticated %}
+                <h4> Share yours ideas </h4>
+                <div class="row">
+                    <div class="mb-3">
+                        <textarea class="form-control" id="idea" rows="3"></textarea>
+                    </div>
+                    <div class="">
+                        <button class="btn btn-primary"> Share </button>
+                    </div>
                 </div>
-                <div class="">
-                    <button class="btn btn-primary"> Share </button>
-                </div>
-            </div>
-            <hr>
+            {% else %}
+                <h4>Most recent posted ideas:</h4>
+            {% endif %}
+                <hr>
             <!-- Posts -->
             <div class="mt-3">
                 <div class="card card-post">

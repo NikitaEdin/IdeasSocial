@@ -10,6 +10,9 @@ ENV/
 .venv/
 .ENV/
 
+# User Uploaded Images
+/app/static/profile_images/
+
 
 # Flask specific
 instance/
@@ -35,8 +38,8 @@ config.py
 config.yaml
 config.json
 
-# Jupyter Notebook checkpoints
-.ipynb_checkpoints
+# Lab HTML (experimental)
+/app/templates/lab
 
 # IDE / Editor directories and files
 .vscode/

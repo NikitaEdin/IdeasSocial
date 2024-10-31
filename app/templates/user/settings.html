@@ -1,0 +1,181 @@
+{% extends 'base_with_menu.html' %}
+
+{% block page_content %}
+
+<div class="container mt-2 p-0 m-0">
+    <!-- Card Wrapper for Profile and Settings -->
+    <div class="card shadow-sm p-4" style="border-color: transparent !important;">
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        <!--  any messages? -->
+            {% if messages %}
+                <!-- loop messages -->
+                {% for category, message in messages %}
+                    <div class="alert alert-{{category}} alert-dismissible fade show" role="alert">
+                        {{ message|safe }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+
+            {% endif %}
+        {% endwith %}
+
+        <h2 class="card-title">User Profile</h2>
+        <hr>
+        <div class="row mb-2">
+            <div class="col-md-3">
+                <h5>Username: </h5>
+            </div>
+            <div class="col-md-9">
+                <p>{{ current_user.get_full_name() }}</p>
+            </div>
+        </div>
+
+
+        <!-- Profile Picture Section -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <h5>Profile Picture</h5>
+            </div>
+
+            <div class="col-md-9 d-flex flex-column align-items-start">
+                <img src="{{ image_file }}" alt="Profile Picture" class="rounded-circle img-fluid mb-2" style="width: 100px; height: 100px;">
+                
+                <form method="POST" enctype="multipart/form-data" class="d-flex flex-column">
+                    {{ profile_picture_form.hidden_tag() }}
+                
+                    {% if active_form == 'profile_picture' and profile_picture_form.profile_picture.errors %}
+                        <div class="text-danger">
+                            {{ profile_picture_form.profile_picture.errors[0] }}
+                        </div>
+                    {% endif %}
+                    
+                    <!-- File Input -->
+                    {{ profile_picture_form.profile_picture(class="form-control-file mb-2") }}
+                
+                    <!-- Submit Button -->
+                    <button type="submit" name="submit_profile_picture" class="btn btn-primary" style="width: 150px;">Update Picture</button>
+
+                </form>
+                
+            </div>
+        </div>
+        
+
+        <!-- Display Name Section -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <h5>Display Name</h5>
+            </div>
+            <div class="col-md-9">
+                <form method="POST">
+                    {{ display_name_form.hidden_tag() }}
+                    <div class="form-group">
+                        {{ display_name_form.display_name(class="form-control", 
+                        placeholder=current_user.displayname if current_user.displayname else "Enter your display name") }}
+
+                        {% if active_form == 'displayname' and display_name_form.display_name.errors %}
+                            <div class="text-danger">
+                                {{ display_name_form.display_name.errors[0] }}
+                            </div>
+                        {% endif %}
+
+                        <small class="form-text text-muted">
+                            {{ "If left blank, your username will be displayed instead." }}
+                        </small>
+                    </div>
+
+                    <div class="d-flex justify-content-start mt-2">
+                        <button type="submit" name="submit_display_name" class="btn btn-primary me-2">Update Display Name</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+
+        <!-- Divider for User Settings -->
+        <h2 class="mt-4 card-title">User Settings</h2>
+        <hr>
+
+        <!-- Email Section -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <h5>Email Address</h5>
+            </div>
+            <div class="col-md-9">
+                <form method="POST">
+                    {{ email_form.hidden_tag() }}
+
+                    <div class="form-group">
+                        {{ email_form.email(type="email", class="form-control", 
+                        placeholder=current_user.email if current_user.email else "Enter your email address") }}
+
+                        {% if active_form == 'email' and email_form.email.errors %}
+                            <div class="text-danger">
+                                {{ email_form.email.errors[0] }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex justify-content-start mt-2">
+                        <button type="submit" name="submit_email" class="btn btn-primary me-2">Update Email</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Update Password Section -->
+         <div class="row mb-4">
+            <div class="col-md-3">
+                <h5>Password</h5>
+            </div>
+
+            <div class="col-md-9">
+                <form method="POST">
+                    {{ password_form.hidden_tag() }} 
+                
+                    <div class="form-group">
+                        {{ password_form.current_password.label(class="form-label") }} 
+                        {{ password_form.current_password(class="form-control", placeholder="****") }} 
+                        {% if active_form == 'password' and password_form.current_password.errors %}
+                            <div class="text-danger">
+                                <small>{{ password_form.current_password.errors[0] }}</small> <!-- Display only the first error message -->
+                            </div>
+                        {% endif %}
+                    </div>
+                
+                    <div class="form-group">
+                        {{ password_form.new_password.label(class="form-label") }} 
+                        {{ password_form.new_password(class="form-control", placeholder="****") }}
+                        {% if active_form == 'password' and password_form.new_password.errors %}
+                            <div class="text-danger">
+                                <small>{{ password_form.new_password.errors[0] }}</small> <!-- Display only the first error message -->
+                            </div>
+                        {% endif %}
+                    </div>
+                
+                    <div class="form-group">
+                        {{ password_form.confirm_password.label(class="form-label") }} 
+                        {{ password_form.confirm_password(class="form-control", placeholder="****") }} 
+                        {% if active_form == 'password' and password_form.confirm_password.errors %}
+                            <div class="text-danger">
+                                <small>{{ password_form.confirm_password.errors[0] }}</small> <!-- Display only the first error message -->
+                            </div>
+                        {% endif %}
+                    </div>
+                
+                    <div class="d-flex justify-content-start mt-2">
+                        <button type="submit" name="submit_password" class="btn btn-primary me-2">Update Password</button>
+                    </div>
+                </form>
+            </div>
+         </div>
+       
+
+       
+    </div>
+</div>
+
+
+{% endblock %}

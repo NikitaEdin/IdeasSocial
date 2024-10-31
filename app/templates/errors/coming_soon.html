@@ -1,0 +1,12 @@
+{% extends 'base_with_menu.html' %}
+
+{% block page_content %}
+
+<div class="container mt-5 text-center mx-0 px-0">
+    <img src="{{ url_for('static', filename='images/soon.png') }}" style="max-height: 400px; width: auto;" alt="Coming Soon Image" class="img-fluid mb-4">
+    <h1 class="display-4">Coming Soon</h1>
+    <p>We're working hard to bring you something great. Stay tuned!</p>
+    <!-- <a href="{{ url_for('home') }}" class="btn btn-primary">Go Back Home</a> -->
+</div>
+
+{% endblock %}

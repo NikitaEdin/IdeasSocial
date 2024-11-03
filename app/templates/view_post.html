@@ -1,0 +1,130 @@
+{% extends 'base_with_menu.html' %}
+
+{% block page_content %}
+
+
+<!-- INDIVIDUAL POST -->
+<div class="card card-post my-3">
+    <div class="px-3 pt-2 d-flex justify-content-between align-items-center" >
+      <!-- Header-LEFT (user name & pfp) -->
+        <div class="d-flex align-items-start" >
+            <div class="d-flex align-items-center" >
+                <img src="{{ post.author.get_pfp() }}" class="me-2" style="width:50px;">
+                <a class="card-title d-flex align-content-between">
+                    <a href="#" class="fs-6 text-decoration-none">{{ post.author.get_full_name() }}</a>
+                </a>
+            </div>
+        </div>
+
+        <!-- Header-RIGHT (options) -->
+        <div class="d-flex align-items-center">
+            <!-- Edit post -->
+            {% if current_user.is_authenticated and current_user.id == post.user_id %}
+            <a href="#" class="text-decoration-none text-muted me-3">
+                <i class="fas fa-edit me-1"></i> Edit Post
+            </a>
+            {% endif %}
+
+            <!-- Delete post -->
+            {% if current_user.is_authenticated and current_user.id == post.user_id %}
+            <a href="#" class="text-decoration-none text-danger me-3 text">
+                <i class="fas fa-trash-alt me-1 text-danger"></i> Delete Post
+            </a>
+            {% endif %}
+
+
+        </div>
+
+    </div>
+    
+    <!-- Body -->
+    <div class="card-body pt-1">
+         <!-- Post Title -->
+        <h5 class="fw-medium my-0">{{ post.title }}</h5>
+
+        <!-- Post Content -->
+        <p class="fs-6 fw-light text-muted">
+            {{ post.content }}
+        </p>
+        <div class="d-flex justify-content-between">
+            <div>
+                <a href="#" class="fw-light nav-link fs-6"> <span class="fas fa-heart me-1">
+                    </span> 100 </a>
+            </div>
+            <div>
+                <span class="fs-6 fw-light text-muted2"> <span class="fas fa-clock"> </span>
+                    {{ post.humanized_time }} 
+                </span>
+            </div>
+        </div>
+     
+    </div>
+</div>
+
+<hr class="mt-5">
+<h5>Comments</h5>
+
+<!-- Adding Comment -->
+<form >
+    <!-- CSRF token placeholder -->
+    <input type="hidden" name="csrf_token" value="PLACEHOLDER_TOKEN">
+    
+    <div class="row">
+        <!-- Comment Field -->
+        <div class="mb-2">
+            <textarea disabled name="content" class="form-control" placeholder="..." rows="3" style="max-height:150px; min-height:50px;" required></textarea>
+           
+        </div>
+
+        <!-- Submit Button -->
+        <div>
+            <button type="submit" class="btn disabled btn-primary mb-1">Comment</button>
+        </div>
+    </div>
+</form>
+
+<!-- Comments -->
+{% for comment in comments %}
+<div class="card card-post my-3">
+    <div class="px-3 pt-2 d-flex justify-content-between align-items-center" >
+      <!-- Header-LEFT (user name & pfp) -->
+        <div class="d-flex align-items-start" >
+            <div class="d-flex align-items-center" >
+                <img src="{{ comment.author.get_pfp() }}" class="me-2" style="width:50px;">
+                <a class="card-title d-flex align-content-between">
+                    <a href="#" class="fs-6 text-decoration-none">{{ comment.author.get_full_name() }}</a>
+                </a>
+            </div>
+        </div>
+
+        <!-- Header-RIGHT (options) -->
+        <div class="d-flex align-items-center">
+        </div>
+    </div>
+    
+    <!-- Body -->
+    <div class="card-body pt-1">
+        <!-- Comment Content -->
+        <p class="fs-6 fw-light text-muted mb-0">
+            {{ comment.content }}
+        </p>
+        <div class="d-flex justify-content-between">
+            <div>
+               
+            </div>
+            <div>
+                <span class="fs-6 fw-light text-muted2"> <span class="fas fa-clock"> </span>
+                    <!-- {{ post.humanized_time }}  -->
+                </span>
+            </div>
+        </div>
+     
+    </div>
+</div>
+
+{% else %}
+<p class="text-muted">No comments yet. Be the first to comment!</p>
+{% endfor %}
+
+
+{% endblock %}

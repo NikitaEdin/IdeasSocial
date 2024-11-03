@@ -227,3 +227,7 @@ html, body {
 .accent-color {
     color: var(--accent-colour); /* accent color */
 }
+
+.text-muted2{
+    color: #6c757d;
+}

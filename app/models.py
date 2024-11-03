@@ -4,6 +4,9 @@ from PIL import Image
 from datetime import datetime
 from app import app, db, login_manager, bcrypt
 from flask_login import UserMixin
+from flask import url_for
+from flask_login import current_user
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -33,6 +36,14 @@ class User(db.Model, UserMixin):
     def check_password(self, password):
         return bcrypt.check_password_hash(self.password, password)
     
+    # Get user picture
+    def get_pfp(self):
+        image_file = url_for('static', filename='users/DefaultUser.png')
+        if self.image_file:
+            image_file = url_for('static', filename='profile_images/' + self.image_file)
+
+        return image_file
+
     # Save picture
     def save_picture(self, form_picture):
          # Define directory where pictures are stored

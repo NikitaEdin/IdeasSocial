@@ -1,17 +1,52 @@
 import os
 import secrets
+import humanize
 from flask import render_template, url_for, flash, redirect, request, abort
 from app import app, db, bcrypt
-from app.forms import RegistrationForm, LoginForm, UpdateDisplayNameForm, UpdateEmailForm, UpdatePasswordForm, ProfilePicutreForm
-from app.models import User, Post
+from app.forms import RegistrationForm, LoginForm, UpdateDisplayNameForm, UpdateEmailForm, UpdatePasswordForm, ProfilePicutreForm, PostForm
+from app.models import User, Post, Comment
 from flask_login import login_user, current_user, logout_user, login_required
+from datetime import datetime
 
 
 # Main homepage
-@app.route("/")
-@app.route("/home")
+@app.route("/", methods=['GET', 'POST'])
+@app.route("/home",  methods=['GET', 'POST'])
 def home():
-    return render_template("home.html", title='Home', current_page='home')
+    form = PostForm()
+
+    # Check if form is submitted and valid
+    if form.validate_on_submit(): 
+        # Check if user is authenticated
+        if not current_user.is_authenticated:
+            flash('You must be logged in to post a message.', 'warning')
+            return redirect(url_for('login'))
+
+        # Create post
+        new_post = Post(
+            title=form.title.data,
+            content=form.content.data,
+            user_id=current_user.id
+        )
+        db.session.add(new_post)
+        db.session.commit()
+        flash('Your post has been created!', 'success')
+        return redirect(url_for('home'))
+
+
+
+
+    # Fetch all posts
+    posts = Post.query.order_by(Post.date_posted.desc()).all()
+
+    for post in posts:
+        post.humanized_time = humanize.naturaltime(datetime.utcnow() - post.date_posted)
+
+    return render_template("home.html", title='Home', current_page='home', posts=posts, form=form)
+
+
+
+
 
 # Authenticaion routes#
 @app.route('/register', methods=['GET', 'POST'])
@@ -131,13 +166,25 @@ def settings():
                            active_form = active_form)
 
 
+########## POSTS
+@app.route("/post/<int:post_id>")
+def view_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    post.humanized_time = humanize.naturaltime(datetime.utcnow() - post.date_posted)
+    comments = Comment.query.filter_by(post_id=post.id).order_by(Comment.date_posted.asc()).all() 
+
+    return render_template('view_post.html', post=post, title=post.title, removeRightMenu=True, comments=comments)
+
+
 # Feed
 @app.route("/feed")
+@login_required
 def feed():
     return render_template("/errors/coming_soon.html", removeRightMenu=True, current_page='feed')
 
 ## Profile
 @app.route("/profile")
+@login_required
 def profile():
     return render_template("/errors/coming_soon.html", removeRightMenu=True, current_page='profile')
 

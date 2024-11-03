@@ -45,9 +45,6 @@ def home():
     return render_template("home.html", title='Home', current_page='home', posts=posts, form=form)
 
 
-
-
-
 # Authenticaion routes#
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -90,6 +87,7 @@ def login():
     return render_template("/auth/login.html", title='Login', form=form)
 
 
+############### USER  ###############
 # Settings
 @app.route("/settings", methods=['GET', 'POST'])
 @login_required
@@ -165,8 +163,56 @@ def settings():
                            profile_picture_form=profile_picture_form,
                            active_form = active_form)
 
+# Current_User profile
+@app.route("/profile")
+@login_required
+def profile():
+    # Get user posts (if any)
+    posts = Post.query.filter_by(user_id=current_user.id).order_by(Post.date_posted.desc()).all()
+    for post in posts:
+        post.humanized_time = humanize.naturaltime(datetime.utcnow() - post.date_posted)
+    # Stats - total posts
+    total_posts = len(posts)
+    # Stats - Following
+    total_following = 0
+    # Stats - Followers
+    total_followers = 0
 
-########## POSTS
+
+
+    return render_template("/user/profile.html", removeRightMenu=True, current_page='profile',
+                           posts=posts, total_posts=total_posts,
+                           total_following=total_following,
+                           total_followers=total_followers)
+
+
+# Other user public page
+@app.route("/user/<int:id>")
+def user_profile(id):
+    user = User.query.get_or_404(id)  # Get the user or return a 404 if not found
+
+    # Current user trying to access their own profile?
+    if current_user.is_authenticated and current_user.id == user.id:
+        return redirect(url_for('profile'))
+
+    posts = Post.query.filter_by(user_id=user.id).order_by(Post.date_posted.desc()).all()
+    for post in posts:
+        post.humanized_time = humanize.naturaltime(datetime.utcnow() - post.date_posted)
+    # Stats - total posts
+    total_posts = len(posts)
+    # Stats - Following
+    total_following = 0
+    # Stats - Followers
+    total_followers = 0
+
+
+    return render_template("/user/user_profile.html", user=user, 
+                           posts=posts, total_posts=total_posts,
+                           total_following=total_following,
+                           total_followers=total_followers)
+
+
+########## POSTS ###############
 @app.route("/post/<int:post_id>")
 def view_post(post_id):
     post = Post.query.get_or_404(post_id)
@@ -181,13 +227,6 @@ def view_post(post_id):
 @login_required
 def feed():
     return render_template("/errors/coming_soon.html", removeRightMenu=True, current_page='feed')
-
-## Profile
-@app.route("/profile")
-@login_required
-def profile():
-    return render_template("/errors/coming_soon.html", removeRightMenu=True, current_page='profile')
-
 
 
 # Logout

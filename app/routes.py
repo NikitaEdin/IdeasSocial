@@ -183,7 +183,8 @@ def profile():
     return render_template("/user/profile.html", removeRightMenu=True, current_page='profile',
                            posts=posts, total_posts=total_posts,
                            total_following=total_following,
-                           total_followers=total_followers)
+                           total_followers=total_followers,
+                           title=current_user.username)
 
 
 # Other user public page
@@ -209,7 +210,8 @@ def user_profile(id):
     return render_template("/user/user_profile.html", user=user, 
                            posts=posts, total_posts=total_posts,
                            total_following=total_following,
-                           total_followers=total_followers)
+                           total_followers=total_followers,
+                           title=user.username)
 
 
 ########## POSTS ###############
@@ -220,6 +222,50 @@ def view_post(post_id):
     comments = Comment.query.filter_by(post_id=post.id).order_by(Comment.date_posted.asc()).all() 
 
     return render_template('view_post.html', post=post, title=post.title, removeRightMenu=True, comments=comments)
+
+
+@app.route('/post/<int:post_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_post(post_id):
+    post = Post.query.get_or_404(post_id)
+
+    # User owns the post
+    if post.author != current_user:
+        flash("You do not have permission to edit this post.", "danger")
+        return redirect(url_for('home'))
+    
+    form = PostForm()
+
+    # Populate the form with current post data
+    if request.method == 'GET':
+        form.title.data = post.title
+        form.content.data = post.content
+
+    # Handle form submission
+    if form.validate_on_submit():
+        post.title = form.title.data
+        post.content = form.content.data
+        db.session.commit()
+        flash('Your post has been updated!', 'success')
+        return redirect(url_for('view_post', post_id=post.id))
+    
+
+    return render_template('edit_post.html', title='Edit Post', form=form, post=post, removeRightMenu=True)
+    
+
+@app.route("/post/<int:post_id>/delete", methods=["POST"])
+@login_required
+def delete_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    if post.author != current_user:
+        flash("You are not authorized to delete this post.", "danger")
+        return redirect(url_for("view_post", post_id=post.id))
+    
+    db.session.delete(post)
+    db.session.commit()
+    flash("Your post has been deleted!", "success")
+    return redirect(url_for("home"))
+
 
 
 # Feed

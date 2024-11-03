@@ -1,0 +1,41 @@
+{% extends 'base_with_menu.html' %}
+
+{% block page_content %}
+
+
+<div class="container mt-2">
+    <h2>Edit Post</h2>
+    <form method="POST" action="{{ url_for('edit_post', post_id=post.id) }}">
+        {{ form.hidden_tag() }}
+
+        <!-- Title Field -->
+        <div class="mb-3">
+            {{ form.title.label(class="form-label") }}
+            {{ form.title(class="form-control", placeholder="Enter post title") }}
+            {% if form.title.errors %}
+                <div class="text-danger">{{ form.title.errors[0] }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Content Field -->
+        <div class="mb-3">
+            {{ form.content.label(class="form-label") }}
+            {{ form.content(class="form-control", placeholder="Update your post content") }}
+            {% if form.content.errors %}
+                <div class="text-danger">{{ form.content.errors[0] }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex justify-content-between">
+            <!-- Update Post Button -->
+            <button type="submit" class="btn btn-primary">{{ form.submit.label.text }}</button>
+
+            <!-- Cancel Button -->
+            <a href="{{ url_for('view_post', post_id=post.id) }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+
+{% endblock %}

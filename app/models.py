@@ -36,7 +36,7 @@ class User(db.Model, UserMixin):
     # Check the hashed password
     def check_password(self, password):
         return bcrypt.check_password_hash(self.password, password)
-    
+
     # Get user picture
     def get_pfp(self):
         image_file = url_for('static', filename='users/DefaultUser.png')
@@ -93,19 +93,43 @@ class User(db.Model, UserMixin):
             return f"{self.displayname} (@{self.username})"
         return self.username
 
-######################### POSTS/TWEETS #########################
+######################### POSTS related #########################
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     content = db.Column(db.Text, nullable=False)
-
+    
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    # Link with LIKES
+    likes = db.relationship('Like', backref='post', lazy='dynamic')
+
 
     # ToString
     def __repr__(self):
         return f"User('{self.title}', '{self.date_posted}')"
     
+    # Like count, total
+    def like_count(self):
+        return self.likes.count()
+
+    # os liked by given user
+    def is_liked_by_user(self, user):
+        return Like.query.filter_by(user_id=user.id, post_id=self.id).first() is not None
+    
+# Post comments
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.Text, nullable=False)
+    date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
+
+    # ToString
+    def __repr__(self):
+        return f"Comment('{self.content}', '{self.date_posted}')"
 
 
 ######################### PLANNED #########################
@@ -118,15 +142,3 @@ class Like(db.Model):
     def __repr__(self):
         return f"Like(User ID: {self.user_id}, Post ID: {self.post_id})"
     
-
-class Comment(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    content = db.Column(db.Text, nullable=False)
-    date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
-
-    # ToString
-    def __repr__(self):
-        return f"Comment('{self.content}', '{self.date_posted}')"

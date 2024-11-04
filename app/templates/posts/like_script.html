@@ -1,0 +1,35 @@
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Add event listeners to all like buttons on the page
+        document.querySelectorAll('.like-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const postId = this.getAttribute('data-post-id');  // Get post ID from data attribute
+                toggleLike(postId);
+            });
+        });
+    });
+
+    function toggleLike(postId) {
+        fetch(`/like/${postId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const likeBtn = document.getElementById(`like-btn-${postId}`);
+            const likeCount = document.getElementById(`like-count-${postId}`);
+
+            // Update like count and button appearance
+            likeCount.textContent = data.like_count;
+
+            if (data.liked) {
+                likeBtn.classList.add('text-danger');  // Highlight button if liked
+            } else {
+                likeBtn.classList.remove('text-danger');  // Remove highlight if unliked
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+</script>

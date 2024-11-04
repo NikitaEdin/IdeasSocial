@@ -42,6 +42,22 @@
                         </h6>
                         <small class="text-muted">Posts</small>
                     </div>
+
+                    <!-- Total Liked Posts (Posts that the user has liked) -->
+                    <div class="">
+                        <h6 class="mb-0">
+                            <i class="fas fa-heart me-1"></i> {{ total_liked_posts }}
+                        </h6>
+                        <small class="text-muted">Liked Posts</small>
+                    </div>
+
+                    <!-- Total Likes Received (Total likes on the user's posts) -->
+                    <div class="">
+                        <h6 class="mb-0">
+                            <i class="fas fa-thumbs-up me-1"></i> {{ total_likes_received }}
+                        </h6>
+                        <small class="text-muted">Total Likes Received</small>
+                    </div>
         
                     <!-- Following -->
                     <div class="">
@@ -113,10 +129,9 @@
                 {{ post.content[:100] }}{% if post.content|length > 100 %}...{% endif %}
             </p>
             <div class="d-flex justify-content-between">
-                <div>
-                    <a href="#" class="fw-light nav-link fs-6"> <span class="fas fa-heart me-1">
-                        </span> 100 </a>
-                </div>
+                <!-- LIKES div -->
+                {% include 'posts/like_comp.html' %}
+
                 <div>
                     <span class="fs-6 fw-light text-muted2"> <span class="fas fa-clock"> </span>
                         {{ post.humanized_time }} 
@@ -133,5 +148,8 @@
 <!-- Pagination -->
 {% set pagination = posts %}
 {% include 'pagination.html' %}
+
+<!-- LIKES script -->
+{% include 'posts/like_script.html' %}
 
 {% endblock %}

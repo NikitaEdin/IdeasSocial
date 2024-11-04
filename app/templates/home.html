@@ -96,10 +96,8 @@
                             {{ post.content[:100] }}{% if post.content|length > 100 %}...{% endif %}
                         </p>
                         <div class="d-flex justify-content-between">
-                            <div>
-                                <a href="#" class="fw-light nav-link fs-6"> <span class="fas fa-heart me-1">
-                                    </span> 100 </a>
-                            </div>
+                            {% include 'posts/like_comp.html' %}
+
                             <div>
                                 <span class="fs-6 fw-light text-muted2"> <span class="fas fa-clock"> </span>
                                     {{ post.humanized_time }} 
@@ -117,6 +115,9 @@
         
         {% set pagination = posts %}
         {% include 'pagination.html' %}
+
+        <!-- Likes script -->
+{% include 'posts/like_script.html' %}
         
 {% endblock %}
 

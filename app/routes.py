@@ -4,9 +4,10 @@ import humanize
 from flask import render_template, url_for, flash, redirect, request, abort
 from app import app, db, bcrypt
 from app.forms import RegistrationForm, LoginForm, UpdateDisplayNameForm, UpdateEmailForm, UpdatePasswordForm, ProfilePicutreForm, PostForm, CommentForm
-from app.models import User, Post, Comment
+from app.models import User, Post, Comment, Like
 from flask_login import login_user, current_user, logout_user, login_required
 from datetime import datetime
+from flask import jsonify
 
 
 # Main homepage
@@ -49,7 +50,7 @@ def home():
     return render_template("home.html", title='Home', current_page='home', posts=posts, form=form)
 
 
-# Authenticaion routes#
+############### Authenticaion routes ###############
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     # Already logged-in?
@@ -91,7 +92,7 @@ def login():
     return render_template("/auth/login.html", title='Login', form=form)
 
 
-############### USER  ###############
+############### USER ###############
 # Settings
 @app.route("/settings", methods=['GET', 'POST'])
 @login_required
@@ -185,12 +186,25 @@ def profile():
     total_following = 0
     # Stats - Followers
     total_followers = 0
+    # Count of posts the current user has liked
+    total_liked_posts = Like.query.filter_by(user_id=current_user.id).count()
+    
+    # Total likes received on all posts by the current user
+    total_likes_received = (
+        db.session.query(Like)
+        .join(Post, Post.id == Like.post_id)
+        .filter(Post.user_id == current_user.id)
+        .count()
+    )
+
 
 
     return render_template("/user/profile.html", removeRightMenu=True, current_page='profile',
                            posts=posts, total_posts=total_posts,
                            total_following=total_following,
                            total_followers=total_followers,
+                           total_liked_posts=total_liked_posts,
+                           total_likes_received=total_likes_received,
                            title=current_user.username)
 
 
@@ -218,12 +232,24 @@ def user_profile(id):
     total_following = 0
     # Stats - Followers
     total_followers = 0
+    # Count of posts the current user has liked
+    total_liked_posts = Like.query.filter_by(user_id=user.id).count()
+    
+    # Total likes received on all posts by the current user
+    total_likes_received = (
+        db.session.query(Like)
+        .join(Post, Post.id == Like.post_id)
+        .filter(Post.user_id == user.id)
+        .count()
+    )
 
 
     return render_template("/user/user_profile.html", user=user, 
                            posts=posts, total_posts=total_posts,
                            total_following=total_following,
                            total_followers=total_followers,
+                           total_liked_posts=total_liked_posts,
+                           total_likes_received=total_likes_received,
                            title=user.username)
 
 
@@ -261,7 +287,7 @@ def view_post(post_id):
             flash('You must be logged-in in order to post comments.', 'danger')
             return redirect(url_for('view_post', post_id=post.id))
 
-    return render_template('view_post.html', post=post, title=post.title, removeRightMenu=True, comments=comments, comment_form=comment_form)
+    return render_template('/posts/view_post.html', post=post, title=post.title, removeRightMenu=True, comments=comments, comment_form=comment_form)
 
 
 @app.route('/post/<int:post_id>/edit', methods=['GET', 'POST'])
@@ -290,7 +316,7 @@ def edit_post(post_id):
         return redirect(url_for('view_post', post_id=post.id))
     
 
-    return render_template('edit_post.html', title='Edit Post', form=form, post=post, removeRightMenu=True)
+    return render_template('/posts/edit_post.html', title='Edit Post', form=form, post=post, removeRightMenu=True)
     
 
 @app.route("/post/<int:post_id>/delete", methods=["POST"])
@@ -299,13 +325,35 @@ def delete_post(post_id):
     post = Post.query.get_or_404(post_id)
     if post.author != current_user:
         flash("You are not authorized to delete this post.", "danger")
-        return redirect(url_for("view_post", post_id=post.id))
+        return redirect(url_for("/posts/view_post", post_id=post.id))
     
     db.session.delete(post)
     db.session.commit()
     flash("Your post has been deleted!", "success")
     return redirect(url_for("home"))
 
+
+@app.route('/like/<int:post_id>', methods=['POST'])
+@login_required
+def toggle_like(post_id):
+    post = Post.query.get_or_404(post_id)
+    like = Like.query.filter_by(user_id=current_user.id, post_id=post_id).first()
+
+    if like:
+        # User already liked the post; unlike it
+        db.session.delete(like)
+        liked = False
+    else:
+        # User has not liked it; add like
+        new_like = Like(user_id=current_user.id, post_id=post_id)
+        db.session.add(new_like)
+        liked = True
+
+    db.session.commit()
+    return jsonify({
+        'liked': liked,
+        'like_count': post.like_count()
+    })
 
 
 # Feed

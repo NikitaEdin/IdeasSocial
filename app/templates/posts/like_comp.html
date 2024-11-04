@@ -1,0 +1,24 @@
+{% if current_user.is_authenticated %}
+<div>
+    <a href="javascript:void(0);" 
+       class="fw-light nav-link fs-6 like-button {% if post.is_liked_by_user(current_user) %}text-danger{% endif %}" 
+       data-post-id="{{ post.id }}" 
+       id="like-btn-{{ post.id }}">
+        <span class="fas fa-heart me-1"></span>
+        <span id="like-count-{{ post.id }}">{{ post.like_count() }}</span>
+    </a>
+</div>
+
+{% else %}
+<div>
+    <a href="javascript:void(0);" 
+       class="fw-light nav-link fs-6 like-button" 
+       data-post-id="{{ post.id }}" 
+       id="like-btn-{{ post.id }}">
+        <span class="fas fa-heart me-1"></span>
+        <span id="like-count-{{ post.id }}">{{ post.like_count() }}</span>
+    </a>
+</div>
+{% endif %}
+
+

@@ -3,7 +3,8 @@ import secrets
 import humanize
 from flask import render_template, url_for, flash, redirect, request, abort
 from app import app, db, bcrypt
-from app.forms import RegistrationForm, LoginForm, UpdateDisplayNameForm, UpdateEmailForm, UpdatePasswordForm, ProfilePicutreForm, PostForm, CommentForm
+from app.forms import RegistrationForm, LoginForm, UpdateDisplayNameForm, UpdateEmailForm, UpdatePasswordForm
+from app.forms import  ProfilePicutreForm, PostForm, CommentForm, EditBioForm
 from app.models import User, Post, Comment, Like
 from flask_login import login_user, current_user, logout_user, login_required
 from datetime import datetime
@@ -253,6 +254,24 @@ def user_profile(id):
                            title=user.username)
 
 
+@app.route('/profile/edit', methods=['GET', 'POST'])
+@login_required
+def edit_bio():
+
+    bio_form = EditBioForm()
+    # Populate the bio (if any)
+    if request.method == 'GET':
+        bio_form.bio.data = current_user.bio
+    
+    if bio_form.validate_on_submit():
+        current_user.bio = bio_form.bio.data
+        db.session.commit()
+        flash('Bio updated!', 'success')
+        return redirect(url_for('profile'))
+
+    return render_template("/user/edit_bio.html", title='Edit Bio', bio_form=bio_form, removeRightMenu=True)
+    
+
 ########## POSTS ###############
 @app.route("/post/<int:post_id>", methods=['GET', 'POST'])
 def view_post(post_id):
@@ -288,7 +307,7 @@ def view_post(post_id):
             return redirect(url_for('view_post', post_id=post.id))
 
     return render_template('/posts/view_post.html', post=post, title=post.title, removeRightMenu=True, comments=comments, comment_form=comment_form)
-
+    post
 
 @app.route('/post/<int:post_id>/edit', methods=['GET', 'POST'])
 @login_required
@@ -369,7 +388,6 @@ def logout():
     logout_user()
     flash('Logged out.', 'success')
     return redirect(url_for('home'))
-
 
 
 

@@ -67,6 +67,9 @@ class UpdatePasswordForm(FlaskForm):
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('new_password', message="Passwords must match")])
     submit = SubmitField('Update Password')
 
+class EditBioForm(FlaskForm):
+    bio = TextAreaField('Bio', validators=[DataRequired(), Length(min=3, max=250)])
+    submit = SubmitField('Update')
 
 
 

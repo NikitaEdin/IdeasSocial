@@ -1,0 +1,32 @@
+{% extends 'base_with_menu.html' %}
+
+{% block page_content %}
+
+
+<div class="container mt-2">
+    <h2>Edit Bio</h2>
+    <form method="POST" action="{{ url_for('edit_bio') }}">
+        {{ bio_form.hidden_tag() }}
+
+        <!-- Bio Field -->
+        <div class="mb-3">
+            {{ bio_form.bio.label(class="form-label") }}
+            {{ bio_form.bio(class="form-control", placeholder="Something unique about you!") }}
+            {% if bio_form.bio.errors %}
+                <div class="text-danger">{{ bio_form.bio.errors[0] }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex justify-content-between">
+            <!-- Update Post Button -->
+            <button type="submit" class="btn btn-primary">{{ bio_form.submit.label.text }}</button>
+
+            <!-- Cancel Button -->
+            <a href="{{ url_for('profile') }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+
+{% endblock %}

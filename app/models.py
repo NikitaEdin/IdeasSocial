@@ -21,6 +21,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(60), nullable=False)
     image_file = db.Column(db.String(20))
     displayname = db.Column(db.String(20))
+    bio = db.Column(db.String(250))
 
     posts = db.relationship('Post', backref='author', lazy=True)
     comments = db.relationship('Comment', backref='author', lazy=True)
@@ -99,7 +100,7 @@ class Post(db.Model):
     title = db.Column(db.String(100), nullable=False)
     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     content = db.Column(db.Text, nullable=False)
-    
+
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     # Link with LIKES

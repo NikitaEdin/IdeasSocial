@@ -3,7 +3,7 @@ import secrets
 import humanize
 from flask import render_template, url_for, flash, redirect, request, abort
 from app import app, db, bcrypt
-from app.forms import RegistrationForm, LoginForm, UpdateDisplayNameForm, UpdateEmailForm, UpdatePasswordForm, ProfilePicutreForm, PostForm
+from app.forms import RegistrationForm, LoginForm, UpdateDisplayNameForm, UpdateEmailForm, UpdatePasswordForm, ProfilePicutreForm, PostForm, CommentForm
 from app.models import User, Post, Comment
 from flask_login import login_user, current_user, logout_user, login_required
 from datetime import datetime
@@ -228,18 +228,40 @@ def user_profile(id):
 
 
 ########## POSTS ###############
-@app.route("/post/<int:post_id>")
+@app.route("/post/<int:post_id>", methods=['GET', 'POST'])
 def view_post(post_id):
+    # Post post by id or 404
     post = Post.query.get_or_404(post_id)
+    
+    # Humanise post date
     post.humanized_time = humanize.naturaltime(datetime.utcnow() - post.date_posted)
 
     # Pagination 
     page = request.args.get('page', 1, type=int)
     posts_per_page = 5
 
-    comments = Comment.query.filter_by(post_id=post.id).order_by(Comment.date_posted.asc()).paginate(page=page, per_page=posts_per_page)
+    # Get post comments with pagination
+    comments = Comment.query.filter_by(post_id=post.id).order_by(Comment.date_posted.desc()).paginate(page=page, per_page=posts_per_page)
+    for comment in comments:
+        comment.humanized_time = humanize.naturaltime(datetime.utcnow() - comment.date_posted)
 
-    return render_template('view_post.html', post=post, title=post.title, removeRightMenu=True, comments=comments)
+
+    # Handle adding comment
+    comment_form = CommentForm()
+    if comment_form.validate_on_submit():
+        # Submited but not authenticated?
+        if current_user.is_authenticated:
+            comment = Comment(content=comment_form.content.data, user_id=current_user.id, post_id = post.id)
+            db.session.add(comment)
+            db.session.commit()
+
+            flash('Comment created!', 'success')
+            return redirect(url_for('view_post', post_id=post.id))
+        else:
+            flash('You must be logged-in in order to post comments.', 'danger')
+            return redirect(url_for('view_post', post_id=post.id))
+
+    return render_template('view_post.html', post=post, title=post.title, removeRightMenu=True, comments=comments, comment_form=comment_form)
 
 
 @app.route('/post/<int:post_id>/edit', methods=['GET', 'POST'])

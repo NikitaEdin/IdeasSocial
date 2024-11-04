@@ -23,6 +23,7 @@ class User(db.Model, UserMixin):
     displayname = db.Column(db.String(20))
 
     posts = db.relationship('Post', backref='author', lazy=True)
+    comments = db.relationship('Comment', backref='author', lazy=True)
 
     # ToString
     def __repr__(self):
@@ -105,8 +106,6 @@ class Post(db.Model):
     def __repr__(self):
         return f"User('{self.title}', '{self.date_posted}')"
     
-
-
 
 
 ######################### PLANNED #########################

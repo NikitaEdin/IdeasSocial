@@ -43,6 +43,10 @@ class PostForm(FlaskForm):
     content = TextAreaField('Content', validators=[DataRequired(), Length(min=3, max=250)])
     submit = SubmitField('Post')
 
+# Post comments
+class CommentForm(FlaskForm):
+    content = TextAreaField('Content', validators=[DataRequired(), Length(min=3, max=250)])
+    submit = SubmitField('Comment')
 
 ########### UPDATE USER
 class ProfilePicutreForm(FlaskForm):

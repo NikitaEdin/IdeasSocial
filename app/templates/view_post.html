@@ -80,24 +80,29 @@
 <hr class="mt-5">
 <h5>Comments</h5>
 
+{% if current_user.is_authenticated %}
 <!-- Adding Comment -->
-<form >
-    <!-- CSRF token placeholder -->
-    <input type="hidden" name="csrf_token" value="PLACEHOLDER_TOKEN">
+<form action="{{ url_for('view_post', post_id=post.id) }}" method="POST">
+    {{ comment_form.hidden_tag() }}
     
     <div class="row">
         <!-- Comment Field -->
         <div class="mb-2">
-            <textarea disabled name="content" class="form-control" placeholder="..." rows="3" style="max-height:150px; min-height:50px;" required></textarea>
-           
+            {{ comment_form.content(class="form-control", placeholder="...", rows="3", style="max-height:150px; min-height:50px;" ) }}
+            {% if comment_form.content.errors %}
+                <div class="text-danger">
+                    {{ comment_form.content.errors[0] }}
+                </div>
+            {% endif %}
         </div>
 
         <!-- Submit Button -->
         <div>
-            <button type="submit" class="btn disabled btn-primary mb-1">Comment</button>
+            {{ comment_form.submit(class="btn btn-primary mb-1") }}
         </div>
     </div>
 </form>
+{% endif %}
 
 <!-- Comments -->
 {% for comment in comments %}
@@ -106,9 +111,9 @@
       <!-- Header-LEFT (user name & pfp) -->
         <div class="d-flex align-items-start" >
             <div class="d-flex align-items-center" >
-                <img src="{{ comment.author.get_pfp() }}" class="me-2" style="width:50px;">
+                <img src="{{ comment.author.get_pfp() }}" class="me-2 rounded-circle" style="width:50px;">
                 <a class="card-title d-flex align-content-between">
-                    <a href="#" class="fs-6 text-decoration-none">{{ comment.author.get_full_name() }}</a>
+                    <a href="{{ url_for('profile') if current_user.is_authenticated and post.author.id == current_user.id else url_for('user_profile', id=post.author.id) }}" class="fs-6 text-decoration-none">{{ comment.author.get_full_name() }}</a>
                 </a>
             </div>
         </div>
@@ -130,7 +135,7 @@
             </div>
             <div>
                 <span class="fs-6 fw-light text-muted2"> <span class="fas fa-clock"> </span>
-                    <!-- {{ post.humanized_time }}  -->
+                    {{ comment.humanized_time }} 
                 </span>
             </div>
         </div>

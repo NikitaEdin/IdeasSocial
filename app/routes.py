@@ -35,9 +35,13 @@ def home():
 
 
 
+    # Posts per page
+    page = request.args.get('page', 1, type=int)
+    posts_per_page = 5
 
     # Fetch all posts
-    posts = Post.query.order_by(Post.date_posted.desc()).all()
+    #posts = Post.query.order_by(Post.date_posted.desc()).all()
+    posts = Post.query.order_by(Post.date_posted.desc()).paginate(page=page, per_page=posts_per_page)
 
     for post in posts:
         post.humanized_time = humanize.naturaltime(datetime.utcnow() - post.date_posted)
@@ -167,17 +171,20 @@ def settings():
 @app.route("/profile")
 @login_required
 def profile():
+    page = request.args.get('page', 1, type=int)
+    posts_per_page = 5
+
     # Get user posts (if any)
-    posts = Post.query.filter_by(user_id=current_user.id).order_by(Post.date_posted.desc()).all()
+    posts = Post.query.filter_by(user_id=current_user.id).order_by(Post.date_posted.desc()).paginate(page=page, per_page=posts_per_page)
+    
     for post in posts:
         post.humanized_time = humanize.naturaltime(datetime.utcnow() - post.date_posted)
     # Stats - total posts
-    total_posts = len(posts)
+    total_posts = len(Post.query.filter_by(user_id=current_user.id).order_by(Post.date_posted.desc()).all())
     # Stats - Following
     total_following = 0
     # Stats - Followers
     total_followers = 0
-
 
 
     return render_template("/user/profile.html", removeRightMenu=True, current_page='profile',
@@ -196,11 +203,17 @@ def user_profile(id):
     if current_user.is_authenticated and current_user.id == user.id:
         return redirect(url_for('profile'))
 
-    posts = Post.query.filter_by(user_id=user.id).order_by(Post.date_posted.desc()).all()
+
+    # Pagination 
+    page = request.args.get('page', 1, type=int)
+    posts_per_page = 5
+
+    # Get posts, paginated
+    posts = Post.query.filter_by(user_id=user.id).order_by(Post.date_posted.desc()).paginate(page=page, per_page=posts_per_page)
     for post in posts:
         post.humanized_time = humanize.naturaltime(datetime.utcnow() - post.date_posted)
     # Stats - total posts
-    total_posts = len(posts)
+    total_posts = len(Post.query.filter_by(user_id=user.id).order_by(Post.date_posted.desc()).all())
     # Stats - Following
     total_following = 0
     # Stats - Followers
@@ -219,7 +232,12 @@ def user_profile(id):
 def view_post(post_id):
     post = Post.query.get_or_404(post_id)
     post.humanized_time = humanize.naturaltime(datetime.utcnow() - post.date_posted)
-    comments = Comment.query.filter_by(post_id=post.id).order_by(Comment.date_posted.asc()).all() 
+
+    # Pagination 
+    page = request.args.get('page', 1, type=int)
+    posts_per_page = 5
+
+    comments = Comment.query.filter_by(post_id=post.id).order_by(Comment.date_posted.asc()).paginate(page=page, per_page=posts_per_page)
 
     return render_template('view_post.html', post=post, title=post.title, removeRightMenu=True, comments=comments)
 

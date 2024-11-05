@@ -10,6 +10,9 @@ from flask_login import login_user, current_user, logout_user, login_required
 from datetime import datetime
 from flask import jsonify
 
+# Global/static variables
+POSTS_PER_PAGE = 5
+
 
 # Main homepage
 @app.route("/", methods=['GET', 'POST'])
@@ -39,7 +42,7 @@ def home():
 
     # Posts per page
     page = request.args.get('page', 1, type=int)
-    posts_per_page = 5
+    posts_per_page = POSTS_PER_PAGE
 
     # Fetch all posts
     #posts = Post.query.order_by(Post.date_posted.desc()).all()
@@ -180,7 +183,7 @@ def settings():
 @login_required
 def profile():
     page = request.args.get('page', 1, type=int)
-    posts_per_page = 5
+    posts_per_page = POSTS_PER_PAGE
 
     # Get user posts (if any)
     posts = Post.query.filter_by(user_id=current_user.id).order_by(Post.date_posted.desc()).paginate(page=page, per_page=posts_per_page)
@@ -227,7 +230,7 @@ def user_profile(id):
 
     # Pagination 
     page = request.args.get('page', 1, type=int)
-    posts_per_page = 5
+    posts_per_page = POSTS_PER_PAGE
 
     # Get posts, paginated
     posts = Post.query.filter_by(user_id=user.id).order_by(Post.date_posted.desc()).paginate(page=page, per_page=posts_per_page)
@@ -316,7 +319,7 @@ def view_post(post_id):
 
     # Pagination 
     page = request.args.get('page', 1, type=int)
-    posts_per_page = 5
+    posts_per_page = POSTS_PER_PAGE
 
     # Get post comments with pagination
     comments = Comment.query.filter_by(post_id=post.id).order_by(Comment.date_posted.desc()).paginate(page=page, per_page=posts_per_page)
@@ -414,7 +417,7 @@ def toggle_like(post_id):
 def feed():
     # Posts per page
     page = request.args.get('page', 1, type=int)
-    posts_per_page = 5
+    posts_per_page = POSTS_PER_PAGE 
 
     # Followed users
     followed_users_ids = [follow.followed_id for follow in current_user.following]
@@ -459,6 +462,11 @@ def search():
         posts = Post.query.filter(
             (Post.title.ilike(f'%{query}%') | (Post.content.ilike(f'%{query}%')))
         ).order_by(Post.date_posted.desc()).paginate(page=page, per_page=per_page)
+
+
+        # Humanised time
+        for post in posts:
+            post.humanized_time = humanize.naturaltime(datetime.utcnow() - post.date_posted)
     else:
         posts = []
 

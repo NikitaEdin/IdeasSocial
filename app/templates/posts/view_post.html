@@ -61,7 +61,7 @@
 
         <!-- Post Content -->
         <p class="fs-6 fw-light text-muted">
-            {{ post.content }}
+            {{ post.content_with_links()|safe }}
         </p>
         <div class="d-flex justify-content-between">
             <!-- Likes div -->

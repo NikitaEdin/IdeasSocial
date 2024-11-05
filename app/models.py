@@ -7,7 +7,10 @@ from flask_login import UserMixin
 from flask import url_for
 from flask_login import current_user
 from sqlalchemy import func
+import re
 
+# Global/static variables
+MAX_CONTENT_LENGTH = 100 
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -169,6 +172,46 @@ class Post(db.Model):
     # os liked by given user
     def is_liked_by_user(self, user):
         return Like.query.filter_by(user_id=user.id, post_id=self.id).first() is not None
+    
+    # Get all hashtags within post content
+    def extract_hashtags(self):
+        hashtags = re.findall(r'#([\w-]+)', self.content)
+        return hashtags
+    
+    # Converts plain text tags into interactible links
+    def content_with_links(self, shortended=False):
+        if shortended:
+            content_with_links = self.shortened_content(MAX_CONTENT_LENGTH)
+        else:
+            content_with_links = self.content
+
+        for hashtag in self.extract_hashtags():
+            hashtag_link = f'<a href="/search?query=%23{hashtag}" class="hashtag">#{hashtag}</a>'
+            content_with_links = content_with_links.replace(f'#{hashtag}', hashtag_link)
+        return content_with_links
+    
+    # Limit the visible content
+    def get_content_snippet(self, max_length=MAX_CONTENT_LENGTH):
+        if len(self.content) > max_length:
+            return self.content[:max_length] + '...'
+        return self.content
+
+    # Shorten content to nearest whitespace 
+    # To avoid broken and unsafe structures (prevent page from breaking)
+    def shortened_content(self, max_length=MAX_CONTENT_LENGTH):
+        if len(self.content) <= max_length:
+            return self.content
+        
+        truncated = self.content[:max_length]
+        last_space_index = truncated.rfind(' ')
+
+        # Return the content up to the last space
+        if last_space_index != -1:
+            return truncated[:last_space_index] + '...'
+        else:
+            return truncated + '...'
+
+
     
 # Post comments
 class Comment(db.Model):

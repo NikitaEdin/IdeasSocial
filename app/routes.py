@@ -45,10 +45,14 @@ def home():
     #posts = Post.query.order_by(Post.date_posted.desc()).all()
     posts = Post.query.order_by(Post.date_posted.desc()).paginate(page=page, per_page=posts_per_page)
 
+    # Suggested users
+    suggested_users = User.get_suggested_users(current_user) if current_user.is_authenticated else []
+
     for post in posts:
         post.humanized_time = humanize.naturaltime(datetime.utcnow() - post.date_posted)
 
-    return render_template("home.html", title='Home', current_page='home', posts=posts, form=form)
+    return render_template("home.html", title='Home', current_page='home', 
+                           posts=posts, form=form, suggested_users=suggested_users)
 
 ############### Authenticaion routes ###############
 @app.route('/register', methods=['GET', 'POST'])
@@ -247,7 +251,7 @@ def user_profile(id):
     )
 
 
-    return render_template("/user/user_profile.html", user=user, 
+    return render_template("/user/user_profile.html", user=user, removeRightMenu=True, 
                            posts=posts, total_posts=total_posts,
                            total_following=total_following,
                            total_followers=total_followers,
@@ -417,10 +421,14 @@ def feed():
 
     posts = Post.query.filter(Post.user_id.in_(followed_users_ids)).order_by(Post.date_posted.desc()).paginate(page=page, per_page=posts_per_page)
 
+    # Humanise post times
     for post in posts:
         post.humanized_time = humanize.naturaltime(datetime.utcnow() - post.date_posted)
 
-    return render_template("feed.html", title='Feed', current_page='feed', posts=posts)
+    # Suggested users
+    suggested_users = User.get_suggested_users(current_user) if current_user.is_authenticated else []
+
+    return render_template("feed.html", title='Feed', current_page='feed', posts=posts, suggested_users=suggested_users)
 
 
 # Logout

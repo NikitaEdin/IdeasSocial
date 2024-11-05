@@ -67,43 +67,52 @@
                     </div>
                 </div>
 
+                <!-- Suggested users -->
+                {% if suggested_users %}
                 <div class="card mt-3 card-post">
                     <div class="card-header pb-0 border-0">
                         <h5 class="">Who to follow</h5>
                     </div>
                     <div class="card-body position-relative">
+                        {% for suggested in suggested_users %}
+
                         <div class="hstack gap-2 mb-3">
                             <div class="avatar">
                                 <a href="#!"><img class="avatar-img rounded-circle" alt=""></a>
                             </div>
                             <div class="overflow-hidden">
-                                <a class="h6 mb-0" href="#!">Mario Brother</a>
-                                <p class="mb-0 small text-truncate">@Mario</p>
+                                {% if suggested.displayname %}
+                                    <!-- If has Displayname, display both -->
+                                    <a class="h6 mb-0" href="{{ url_for('user_profile', id=suggested.id) }}">{{ suggested.displayname }}</a>
+                                    <p class="mb-0 small text-truncate">@{{ suggested.username }}</p>
+                                {% else %}
+                                    <!-- Use username for display as well-->
+                                    <a class="h6 mb-0" href="{{ url_for('user_profile', id=suggested.id) }}">{{ suggested.username }}</a>
+                                    <p class="mb-0 small text-truncate">@{{ suggested.username }}</p>
+                                {% endif %}
+                                
+                               <!-- Display the number of followers or posts -->
+                               <small class="text-muted">
+                                    {{ suggested.get_follower_count() }} follower{{ 's' if suggested.get_follower_count() != 1 else '' }}
+                                   | 
+                                    {{ suggested.get_post_count() }} post{{ 's' if suggested.get_post_count() != 1 else '' }}
+                                </small>
                             </div>
-                            <a class="btn btn-primary-soft rounded-circle icon-md ms-auto" href="#"><i
-                                    class="fa-solid fa-plus"> </i></a>
+                            
+                            
+                            <form action="{{ url_for('follow_user', user_id=suggested.id) }}" method="POST" class="ms-auto" style="display: inline;">
+                                <button type="submit" class="btn btn-primary-soft rounded-circle icon-md" style="color: var(--accent-colour);">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                            </form>
+                            
                         </div>
-                        <div class="hstack gap-2 mb-3">
-                            <div class="avatar">
-                                <a href="#!"><img class="avatar-img rounded-circle" alt=""></a>
-                            </div>
-                            <div class="overflow-hidden">
-                                <a class="h6 mb-0" href="#!">Mario Brother</a>
-                                <p class="mb-0 small text-truncate">@Mario</p>
-                            </div>
-                            <a class="btn btn-primary-soft rounded-circle icon-md ms-auto" href="#"><i
-                                    class="fa-solid fa-plus"> </i></a>
-                        </div>
-                        <div class="d-grid mt-3">
-                            <a class="btn btn-sm btn-primary-soft" href="#!">Show More</a>
-                        </div>
-                        <!-- Coming Soon Overlay -->
-                        <div class="coming-soon-overlay">
-                            <span>Coming Soon</span>
-                        </div>
+                        {% endfor %}
                     </div>
+               
+            
                 </div>
-            </div>
+                {% endif %}
         {% endif %}
     </div>
 </div>

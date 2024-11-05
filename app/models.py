@@ -6,6 +6,7 @@ from app import app, db, login_manager, bcrypt
 from flask_login import UserMixin
 from flask import url_for
 from flask_login import current_user
+from sqlalchemy import func
 
 
 @login_manager.user_loader
@@ -118,6 +119,30 @@ class User(db.Model, UserMixin):
     # Check if user is followed by given user
     def is_followed_by(self, user):
         return self.followers.filter_by(follower_id=user.id).first() is not None
+    
+
+    def get_suggested_users(current_user, limit=5):
+        # Subquery to get user ids that current user is currently following
+        followed_user_subquery = db.session.query(Follow.followed_id).filter_by(follower_id=current_user.id)
+
+        # Query to get users with the most followers, that are not yet followed by current user
+        suggested_users = (
+            db.session.query(User)
+            .outerjoin(Follow, Follow.followed_id == User.id)
+            .filter(User.id.notin_(followed_user_subquery), User.id != current_user.id)
+            .group_by(User.id)
+            .order_by(func.count(Follow.follower_id).desc()) # sort by follower count
+            .limit(limit)
+            .all()
+        )
+        return suggested_users
+
+    # Get total followers
+    def get_follower_count(self):
+        return self.followers.count()
+    # Get total post count
+    def get_post_count(self):
+        return len(Post.query.filter_by(user_id=self.id).order_by(Post.date_posted.desc()).all())
 
 
 ######################### POSTS related #########################

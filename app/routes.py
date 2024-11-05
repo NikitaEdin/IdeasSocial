@@ -50,7 +50,6 @@ def home():
 
     return render_template("home.html", title='Home', current_page='home', posts=posts, form=form)
 
-
 ############### Authenticaion routes ###############
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -96,7 +95,7 @@ def login():
     return render_template("/auth/login.html", title='Login', form=form)
 
 
-############### USER ###############
+############################## USER ##############################
 # Settings
 @app.route("/settings", methods=['GET', 'POST'])
 @login_required
@@ -302,7 +301,7 @@ def follow_user(user_id):
     return redirect(url_for('user_profile', id=user_id))
 
 
-########## POSTS ###############
+############################## POSTS ##############################
 @app.route("/post/<int:post_id>", methods=['GET', 'POST'])
 def view_post(post_id):
     # Post post by id or 404
@@ -409,7 +408,19 @@ def toggle_like(post_id):
 @app.route("/feed")
 @login_required
 def feed():
-    return render_template("/errors/coming_soon.html", removeRightMenu=True, current_page='feed')
+    # Posts per page
+    page = request.args.get('page', 1, type=int)
+    posts_per_page = 5
+
+    # Followed users
+    followed_users_ids = [follow.followed_id for follow in current_user.following]
+
+    posts = Post.query.filter(Post.user_id.in_(followed_users_ids)).order_by(Post.date_posted.desc()).paginate(page=page, per_page=posts_per_page)
+
+    for post in posts:
+        post.humanized_time = humanize.naturaltime(datetime.utcnow() - post.date_posted)
+
+    return render_template("feed.html", title='Feed', current_page='feed', posts=posts)
 
 
 # Logout
@@ -421,7 +432,7 @@ def logout():
 
 
 
-########### ERRORS OR COMMON ###########
+############################## ERRORS OR COMMON ##############################
 @app.errorhandler(404)
 def not_found(error):
     return render_template('/errors/404.html'), 404 

@@ -58,12 +58,10 @@
                         <h5 class="">Search</h5>
                     </div>
                     <div class="card-body position-relative">
-                        <input placeholder="..." class="form-control w-100" type="text" id="search">
-                        <button class="btn btn-dark mt-2"> Search</button>
-                        <!-- Coming Soon Overlay -->
-                        <div class="coming-soon-overlay">
-                            <span>Coming Soon</span>
-                        </div>
+                        <form action="{{ url_for('search') }}" method="GET">
+                            <input placeholder="..." class="form-control w-100" type="text" name="query">
+                            <button class="btn btn-dark mt-2"> Search</button>
+                        </form>
                     </div>
                 </div>
 

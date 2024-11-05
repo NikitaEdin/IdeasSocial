@@ -439,6 +439,34 @@ def logout():
     return redirect(url_for('home'))
 
 
+########### SEARCH ###########
+@app.route('/search', methods=['GET'])
+def search():
+    # Pagination
+    page = request.args.get('page', 1, type=int)  
+    per_page = 5
+
+    # Get query from URL
+    query = request.args.get('query')
+
+    if query:
+
+        if len(query) < 3 or len(query) > 50:
+            flash('Invalid search query. Please enter a valid search term.', 'warning')
+            return redirect(url_for('home'))  # Redirect to home if the query is invalid
+
+        # Search query in post titles and contents
+        posts = Post.query.filter(
+            (Post.title.ilike(f'%{query}%') | (Post.content.ilike(f'%{query}%')))
+        ).order_by(Post.date_posted.desc()).paginate(page=page, per_page=per_page)
+    else:
+        posts = []
+
+    return render_template('search_results.html', 
+                           title='Search',
+                           posts=posts, query=query)
+
+
 
 ############################## ERRORS OR COMMON ##############################
 @app.errorhandler(404)

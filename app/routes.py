@@ -5,7 +5,7 @@ from flask import render_template, url_for, flash, redirect, request, abort
 from app import app, db, bcrypt
 from app.forms import RegistrationForm, LoginForm, UpdateDisplayNameForm, UpdateEmailForm, UpdatePasswordForm
 from app.forms import  ProfilePicutreForm, PostForm, CommentForm, EditBioForm
-from app.models import User, Post, Comment, Like
+from app.models import User, Post, Comment, Like, Follow
 from flask_login import login_user, current_user, logout_user, login_required
 from datetime import datetime
 from flask import jsonify
@@ -77,7 +77,10 @@ def login():
     
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
+        # Case sensetive email check (old code)
+        #user = User.query.filter_by(email=form.email.data).first()
+        user = User.query.filter(User.email.ilike(form.email.data)).first()
+
         # Successful login?
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
@@ -184,9 +187,9 @@ def profile():
     # Stats - total posts
     total_posts = len(Post.query.filter_by(user_id=current_user.id).order_by(Post.date_posted.desc()).all())
     # Stats - Following
-    total_following = 0
+    total_following = current_user.following.count()
     # Stats - Followers
-    total_followers = 0
+    total_followers = current_user.followers.count()
     # Count of posts the current user has liked
     total_liked_posts = Like.query.filter_by(user_id=current_user.id).count()
     
@@ -230,9 +233,9 @@ def user_profile(id):
     # Stats - total posts
     total_posts = len(Post.query.filter_by(user_id=user.id).order_by(Post.date_posted.desc()).all())
     # Stats - Following
-    total_following = 0
+    total_following = user.following.count()
     # Stats - Followers
-    total_followers = 0
+    total_followers = user.followers.count()
     # Count of posts the current user has liked
     total_liked_posts = Like.query.filter_by(user_id=user.id).count()
     
@@ -271,6 +274,33 @@ def edit_bio():
 
     return render_template("/user/edit_bio.html", title='Edit Bio', bio_form=bio_form, removeRightMenu=True)
     
+
+@app.route('/follow/<int:user_id>', methods=['POST'])
+@login_required
+def follow_user(user_id):
+    # Get user by id
+    user_to_follow = User.query.get_or_404(user_id)
+
+    # Prevent users from following themselves
+    if user_to_follow == current_user:
+        flash("You cannot follow yourself.", 'warning')
+        return redirect(url_for('user_profile', user_id=user_id))
+    
+    # Already following? - Unfollow
+    if current_user.is_following(user_to_follow):
+        follow = Follow.query.filter_by(follower_id=current_user.id, followed_id=user_id).first()
+        db.session.delete(follow)
+        db.session.commit()
+        flash(f"You have unfollowed {user_to_follow.username}.", 'info')
+    else:
+        # Follow user
+        new_follow = Follow(follower_id=current_user.id, followed_id=user_to_follow.id)
+        db.session.add(new_follow)
+        db.session.commit()
+        flash(f"You are now folllwing {user_to_follow.username}.", 'success')
+
+    return redirect(url_for('user_profile', id=user_id))
+
 
 ########## POSTS ###############
 @app.route("/post/<int:post_id>", methods=['GET', 'POST'])

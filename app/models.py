@@ -1,7 +1,7 @@
 import os
 import secrets
 from PIL import Image
-from datetime import datetime
+from datetime import datetime, timezone
 from app import app, db, login_manager, bcrypt
 from flask_login import UserMixin
 from flask import url_for
@@ -12,6 +12,17 @@ from flask_login import current_user
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+
+# User Follow
+class Follow(db.Model):
+    __tablename__ = 'follows'
+    follower_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    followed_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    timestamp = db.Column(db.DateTime, default=datetime.now(timezone.utc))
+
+    def __repr__(self):
+        return f"<Follow follwer_id={self.follower_id} followed_id={self.followed_id}>"
+    
 
 ######################### USER #########################
 class User(db.Model, UserMixin):
@@ -25,6 +36,12 @@ class User(db.Model, UserMixin):
 
     posts = db.relationship('Post', backref='author', lazy=True)
     comments = db.relationship('Comment', backref='author', lazy=True)
+
+    # Followers, users that follow THIS user
+    followers = db.relationship('Follow',foreign_keys=[Follow.followed_id],backref='followed_user',lazy='dynamic')
+
+    # Follwings, the users that THIS user follows
+    following = db.relationship( 'Follow',foreign_keys=[Follow.follower_id], backref='follower_user',lazy='dynamic')
 
     # ToString
     def __repr__(self):
@@ -93,6 +110,15 @@ class User(db.Model, UserMixin):
         if self.displayname:
             return f"{self.displayname} (@{self.username})"
         return self.username
+    
+    # Check if THIS user is following the given user
+    def is_following(self, user):
+        return self.following.filter_by(followed_id=user.id).first() is not None
+    
+    # Check if user is followed by given user
+    def is_followed_by(self, user):
+        return self.followers.filter_by(follower_id=user.id).first() is not None
+
 
 ######################### POSTS related #########################
 class Post(db.Model):
@@ -133,7 +159,7 @@ class Comment(db.Model):
         return f"Comment('{self.content}', '{self.date_posted}')"
 
 
-######################### PLANNED #########################
+# Post Likes
 class Like(db.Model):
     __tablename__ = 'likes'
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
@@ -143,3 +169,4 @@ class Like(db.Model):
     def __repr__(self):
         return f"Like(User ID: {self.user_id}, Post ID: {self.post_id})"
     
+

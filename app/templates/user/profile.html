@@ -5,6 +5,21 @@
 
 <h5 class="mt-2">Profile</h5>
 
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      <!--  any messages? -->
+      {% if messages %}
+          <!-- loop messages -->
+          {% for category, message in messages %}
+              <div class="alert alert-{{category}} alert-dismissible fade show" role="alert">
+                  {{ message}}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+          {% endfor %}
+
+      {% endif %}
+   {% endwith %}
+
 <!-- Profile -->
 <div class="container px-0">
     <div class="card shadow-sm rounded-3 p-4" style="border-color: transparent !important;">

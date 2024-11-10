@@ -6,11 +6,15 @@ The aim of the project is to build a simplified clone of Twitter, using **Flask*
 The project demonstrates basic user interactions such as user creation, posting, following, and interacting with posts, showcasing the fundamental features of a social media platform.
 
 ## Features
-- User Registration and Login functionality.
-- Post Creation and Timeline features.
-- User Following to enable following other users and seeing their posts _(planned)_.
-- Likes and Comments on posts _(planned)_.
-- Responsive Design for Seamless experience on both desktop and mobile devices.
+- **Authentication & Authorisation**: Secure sign-up, login, and permission management.
+- **Posting & Timeline**: Users can create posts and view a timeline of content.
+- **Follow System**: Follow others to see their posts in user feed.
+- **Likes & Comments**: Interact with posts via likes and comments.
+- **Search & Hashtags**: Easily discover content with search and hashtag support.
+- **User Profiles & Customisation**: Personalise profiles with settings and profile pictures.
+- **Responsive Design**: Optimised for both desktop and mobile.
+- **Admin Panel**: Tools for managing users and site activity.
+- **API with Swagger**: API access with developer documentation (ready-only).
 
 ## Tech Stack
 - Backend: Flask (Python).
@@ -24,9 +28,7 @@ The project demonstrates basic user interactions such as user creation, posting,
 - [Python 3.x](https://www.python.org/downloads/)
 
 ### Installation Steps
-Clone the repo and open in your editor of choice, preferably Visual Studio Code.
-
-Execute the following commands in the Terminal:
+- Clone the repo and execute the following commands in the Terminal _(within project root folder)_:
 - `python -m venv venv` to create a virtual environment.
 - `venv\Scripts\activate` to activate the venv.
 
@@ -35,15 +37,4 @@ Execute the following commands in the Terminal:
 > `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Unrestricted`
 
 - `pip install -r requirements.txt` to install all dependencies.
-- Create a new file called `.env` in the root folder, and add the following:
-
-```
-SECRET_KEY=you_secret_key
-DATABASE_URL=sqlite:///site.db
-Debug=True
-```
-
-> [!TIP]  
-> Replace `your_secret_key` with your actual key.
-
 - `python run.py` - To launch the project.

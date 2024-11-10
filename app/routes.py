@@ -1,5 +1,5 @@
 import humanize
-from flask import render_template, url_for, flash, redirect, request, abort
+from flask import render_template, url_for, flash, redirect, request
 from app import app, db
 from app.forms import PostForm
 from app.models import User, Post

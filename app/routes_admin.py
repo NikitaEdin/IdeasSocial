@@ -80,7 +80,7 @@ def edit_user(user_id):
 
 
 # Create the Blueprint for admin routes
-# NOTE: already keep this at the very bottom
+# NOTE: keep this at the very bottom
 app.register_blueprint(admin_bp)
 
 

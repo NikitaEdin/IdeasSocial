@@ -37,7 +37,14 @@
         </p>
         
         <div class="d-flex justify-content-between">
+            <div class="d-flex">
             {% include 'posts/like_comp.html' %}
+                <div class="ms-4 d-flex align-items-center">
+                    <i class="fas fa-comment me-1 text-muted2"></i>
+                    <span class="ms-1 text-muted2">{{ post.comment_count() }}</span>
+                </div>
+            
+            </div>
 
             <div>
                 <span class="fs-6 fw-light text-muted2"> <span class="fas fa-clock"> </span>

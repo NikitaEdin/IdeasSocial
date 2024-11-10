@@ -91,7 +91,7 @@
               {% for comment in recent_comments %}
                   <li>
                       
-                      <a href="{{ url_for('profile') if current_user.is_authenticated and comment.post.author.id == current_user.id else url_for('user_profile', id=comment.post.author.id) }}" class="text-dark">{{ comment.author.get_full_name() }}</a> 
+                      <a href="{{ url_for('profile') if comment.author.id == current_user.id else url_for('user_profile', id=comment.author.id) }}" class="text-dark">{{ comment.author.get_full_name() }}</a> 
                       commented on 
                       <a href="{{ url_for('view_post', post_id=comment.post.id) }}" class="text-dark">
                           {{ comment.post.title }}</a>: <br>{{ comment.content[:20] }}

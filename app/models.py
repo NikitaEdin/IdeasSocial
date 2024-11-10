@@ -218,6 +218,9 @@ class Post(db.Model):
         else:
             return truncated + '...'
 
+    # Get total comments on post
+    def comment_count(self):
+        return len(self.comments)
 
     
 # Post comments

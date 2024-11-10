@@ -1,0 +1,96 @@
+{% extends '/admin/base_admin.html' %}
+
+{% block page_content %}
+<!-- Main centre column  -->
+<div class="">
+  <!-- Flash messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    <!--  any messages? -->
+    {% if messages %}
+        <!-- loop messages -->
+        {% for category, message in messages %}
+        <div class="alert alert-{{category}} alert-dismissible fade show" role="alert">
+            {{ message}}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+
+
+    <div class="container px-0">
+        <div class="card shadow-sm rounded-3 p-4" style="border: none;">
+            <h2>Edit User: {{ user.username }}</h2>
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                
+                <!-- Username -->
+                <div class="mb-3">
+                    {{ form.username.label(class="form-label") }}
+                    {{ form.username(class="form-control") }}
+                    {% if form.username.errors %}
+                        <div class="text-danger">{{ form.username.errors[0] }}</div>
+                    {% endif %}
+                </div>
+        
+                <!-- Email -->
+                <div class="mb-3">
+                    {{ form.email.label(class="form-label") }}
+                    {{ form.email(class="form-control") }}
+                    {% if form.email.errors %}
+                        <div class="text-danger">{{ form.email.errors[0] }}</div>
+                    {% endif %}
+                </div>
+        
+                <!-- Displayname -->
+                <div class="mb-3">
+                    {{ form.displayname.label(class="form-label") }}
+                    {{ form.displayname(class="form-control") }}
+                    {% if form.displayname.errors %}
+                        <div class="text-danger">{{ form.displayname.errors[0] }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Bio -->
+                <div class="mb-3">
+                    {{ form.bio.label(class="form-label") }}
+                    {{ form.bio(class="form-control", placeholder="Something unique about you!") }}
+                    {% if form.bio.errors %}
+                        <div class="text-danger">{{ form.bio.errors[0] }}</div>
+                    {% endif %}
+                 </div>
+
+                <!-- Password -->
+                <hr>
+                <div class="mb-3 mt-2">
+                    {{ form.password.label(class="form-label") }}
+                    {{ form.password(class="form-control") }}
+                    {% if form.password.errors %}
+                        <div class="text-danger">{{ form.password.errors[0] }}</div>
+                    {% endif %}
+                    <small class="text-muted">Leave blank if you don't want to change the password.</small>
+                </div>
+        
+                <div class="mb-3">
+                    {{ form.confirm_password.label(class="form-label") }}
+                    {{ form.confirm_password(class="form-control") }}
+                    {% if form.confirm_password.errors %}
+                        <div class="text-danger">{{ form.confirm_password.errors[0] }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Make sure to notify admins about changing passwords -->
+                <div class="alert alert-warning">
+                    <strong>Note:</strong> Avoid changing the user's password unless absolutely necessary. 
+                    Inform the user directly if a change is required.
+                </div>
+        
+                <button type="submit" class="btn btn-primary">{{ form.submit.label }}</button>
+                <a href="{{ url_for('admin.users') }}" class="btn btn-secondary">Cancel</a>
+            </form>
+            
+        </div>
+    </div>
+</div>
+{% endblock %}

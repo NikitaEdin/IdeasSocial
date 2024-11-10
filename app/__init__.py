@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Blueprint, Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
@@ -56,3 +56,6 @@ from app import routes
 from app import routes_auth
 from app import routes_user
 from app import routes_post
+
+# Admin
+from app import routes_admin

@@ -1,8 +1,9 @@
+
 from flask_wtf import FlaskForm
 from flask_login import current_user
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField
 from flask_wtf.file import FileField, FileAllowed
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, Optional
 from app.models import User, Post
 
 ########### Registration
@@ -72,4 +73,15 @@ class EditBioForm(FlaskForm):
     submit = SubmitField('Update')
 
 
+########### Admin
+class EditUserForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired(),  Length(min=2, max=20) ])
+    email = StringField('Email', validators=[DataRequired(), Email(), Length(max=120)])
+    displayname = StringField('Display Name', validators=[DataRequired(), Length(min=3, max=20)])
+    bio = TextAreaField('Bio', validators=[DataRequired(), Length(min=3, max=250)])
 
+     # Password fields
+    password = PasswordField('New Password', validators=[Optional()])
+    confirm_password = PasswordField('Confirm New Password', validators=[EqualTo('password', message="Passwords must match.")])
+
+    submit = SubmitField('Save Changes')

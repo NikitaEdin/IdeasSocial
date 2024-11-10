@@ -117,6 +117,10 @@ def search():
 def not_found(error):
     return render_template('/errors/404.html'), 404 
 
+@app.errorhandler(403)
+def forbidden(error):
+    return render_template('/errors/403.html'), 403
+
 
 @app.route('/coming-soon')
 def coming_soon():

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <title>403 Forbidden</title>
+</head>
+<body class="bg-light text-center">
+    <img src="{{ url_for('static', filename='images/403.png') }}" style="width: 400px;" alt="403 Image" class="img-fluid mb-4">
+    <h1 class="display-3 text-danger">403 Forbidden</h1>
+    <p class="lead mb-0">You do not have permission to access this page.</p>
+    <p class="text-muted">If you believe this is a mistake, please contact the site administrator.</p>
+    <a href="{{ url_for('home') }}" class="btn btn-primary">Go Back Home</a>
+</body>
+</html>

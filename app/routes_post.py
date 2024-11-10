@@ -1,6 +1,7 @@
 import humanize
 from flask import render_template, url_for, flash, redirect, request, abort
 from app import app, db, bcrypt
+from app.decorators import admin_required
 from app.forms import  PostForm, CommentForm
 from app.models import Post, Comment, Like
 from flask_login import current_user, login_required
@@ -32,7 +33,7 @@ def view_post(post_id):
 
     # Handle adding comment
     comment_form = CommentForm()
-    if comment_form.validate_on_submit():
+    if comment_form.validate_on_submit() and 'submit_comment' in request.form:
         # Submited but not authenticated?
         if current_user.is_authenticated:
             comment = Comment(content=comment_form.content.data, user_id=current_user.id, post_id = post.id)
@@ -44,6 +45,7 @@ def view_post(post_id):
         else:
             flash('You must be logged-in in order to post comments.', 'danger')
             return redirect(url_for('view_post', post_id=post.id))
+        
 
     return render_template('/posts/view_post.html', post=post, title=post.title, removeRightMenu=True, comments=comments, comment_form=comment_form)
     post
@@ -54,7 +56,7 @@ def edit_post(post_id):
     post = Post.query.get_or_404(post_id)
 
     # User owns the post
-    if post.author != current_user:
+    if post.author != current_user and not current_user.is_admin():
         flash("You do not have permission to edit this post.", "danger")
         return redirect(url_for('home'))
     
@@ -81,7 +83,7 @@ def edit_post(post_id):
 @login_required
 def delete_post(post_id):
     post = Post.query.get_or_404(post_id)
-    if post.author != current_user:
+    if post.author != current_user and not current_user.is_admin():
         flash("You are not authorized to delete this post.", "danger")
         return redirect(url_for("/posts/view_post", post_id=post.id))
     
@@ -89,6 +91,22 @@ def delete_post(post_id):
     db.session.commit()
     flash("Your post has been deleted!", "success")
     return redirect(url_for("home"))
+
+
+@app.route("/comment/<int:comment_id>/delete", methods=["POST"])
+@admin_required
+def delete_comment(comment_id):
+    # Get comment by id
+    comment = Comment.query.get_or_404(comment_id)
+    # Delete found comment
+    db.session.delete(comment)
+    db.session.commit()
+    # Display flash message
+    flash('The comment has been deleted successfully.', 'success')
+    # Redirect back to post
+    return redirect(url_for('view_post', post_id=comment.post_id))
+    
+
 
 
 @app.route('/like/<int:post_id>', methods=['POST'])

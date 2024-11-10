@@ -26,23 +26,32 @@
         <div class="row align-items center">
             <!-- Profile picture -->
              <div class="col-md-2 d-flex justify-content-center">
-                <img src="{{ user.get_pfp() }}" alt="Profile Picture" class="rounded-circle" style="width: 100px; height: 100px;">
+                <img src="{{ user.get_pfp() }}" alt="Profile Picture" 
+                class="rounded-circle {% if user.is_admin() %} img-bordered-admin {% endif %}" 
+                 style="width: 100px; height: 100px;">
              </div>
 
              <!-- User name -->
              <div class="col">
-                 <div class="d-flex justify-content-between me-3">
-                    {% if user.displayname %}
-                        <h3 class="mb-1">{{ user.displayname }}</h3>
-                    {% else %}
-                        <h3 class="mb-1">{{ user.get_full_name() }}</h3>
-                    {% endif %}
+                <div class="d-flex justify-content-between me-3">
+                    <h3 class="mb-1">
+                    <!-- Display username -->
+                        {% if user.displayname %}
+                            {{ user.displayname }}
+                        {% else %}
+                            {{ user.get_full_name() }}
+                        {% endif %}
 
+                        <!-- Any badges/flairs -->
+                        {% if user.is_admin() %}
+                        <span class="badge bg-danger badge-sm">Admin</span>
+                        {% endif %}
+                    </h3>
+                
                     <!-- Follow button -->
                     {% if current_user.is_authenticated and current_user != user %}
                     <div class="col-md-2 text-end">
                         <form action="{{ url_for('follow_user', user_id=user.id) }}" method="POST" style="display: inline;">
-                        
                             <button type="submit" class="btn btn-link text-decoration-none" style="color: var( --accent-colour);">
                                 {% if current_user.is_following(user) %}
                                     <i class="fas fa-user-minus me-1"></i> Unfollow
@@ -54,6 +63,7 @@
                     </div>
                     {% endif %}
                 </div>
+                
 
                 <p class="text-muted">@{{ user.username }}</p>
 

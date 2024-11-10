@@ -1,0 +1,116 @@
+{% extends '/admin/base_admin.html' %}
+
+{% block page_content %}
+<!-- Main centre column  -->
+<div class="">
+  <!-- Flash messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  <!--  any messages? -->
+  {% if messages %}
+  <!-- loop messages -->
+  {% for category, message in messages %}
+  <div class="alert alert-{{category}} alert-dismissible fade show" role="alert">
+    {{ message}}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  {% endfor %}
+
+  {% endif %}
+  {% endwith %}
+
+  <div class="container px-0">
+    <div class="card shadow-sm rounded-3 p-4" style="border: none;">
+      <h2 class="mb-4">Admin Dashboard</h2>
+
+      <!-- Updated Metrics Section with Flat Colors -->
+      <div class="row">
+        
+        <!-- Total Users -->
+        <div class="col-md-3">
+          <div class="card mb-3" style="background-color: #1abc9c; color: white; border: none;">
+            <div class="card-body">
+              <h5 class="card-title">Total Users</h5>
+              <p class="card-text display-4">{{ total_users}}</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Total Posts -->
+        <div class="col-md-3">
+          <div class="card mb-3" style="background-color: #2ecc71; color: white; border: none;">
+            <div class="card-body">
+              <h5 class="card-title">Total Posts</h5>
+              <p class="card-text display-4">{{ total_posts }}</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Total Comments -->
+        <div class="col-md-3">
+          <div class="card mb-3" style="background-color: #3498db; color: white; border: none;">
+            <div class="card-body">
+              <h5 class="card-title">Total Comments</h5>
+              <p class="card-text display-4">{{ total_comments }}</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Total Likes -->
+        <div class="col-md-3">
+          <div class="card mb-3" style="background-color: #9b59b6; color: white; border: none;">
+            <div class="card-body">
+              <h5 class="card-title">Total Likes</h5>
+              <p class="card-text display-4">{{ total_likes }}</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Recent Activity Section -->
+      <div class="card mt-4" style="border: none;">
+        <div class="card-body" style="background-color: #f8f9fa;">
+            <h5 class="card-title">Recent Activity</h5>
+            
+            <!-- Recent Posts -->
+            <h6>Recent Posts</h6>
+            <ul>
+                {% for post in recent_posts %}
+                    <li>
+                      <a href="{{ url_for('profile') if current_user.is_authenticated and post.author.id == current_user.id else url_for('user_profile', id=post.author.id) }}" class="text-dark">{{ post.author.get_full_name() }}</a> 
+                      posted:
+                      <a href="{{ url_for('view_post', post_id=post.id) }}" class="text-dark" >{{ post.title[:50] }}</a> 
+                      <span class="text-muted ms-2">({{post.humanized_time}})</span>
+                    </li>
+                {% endfor %}
+            </ul>
+            
+            <!-- Recent Comments -->
+            <h6>Recent Comments</h6>
+            <ul>
+              {% for comment in recent_comments %}
+                  <li>
+                      
+                      <a href="{{ url_for('profile') if current_user.is_authenticated and comment.post.author.id == current_user.id else url_for('user_profile', id=comment.post.author.id) }}" class="text-dark">{{ comment.author.get_full_name() }}</a> 
+                      commented on 
+                      <a href="{{ url_for('view_post', post_id=comment.post.id) }}" class="text-dark">
+                          {{ comment.post.title }}</a>: <br>{{ comment.content[:20] }}
+                      <span class="text-muted small"> ({{ comment.humanized_time }})</span>
+                  </li>
+              {% endfor %}
+          </ul>
+        </div>
+    </div>
+
+
+    </div>
+</div>
+
+
+
+
+
+
+
+</div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'layout.html' %}
+
+{% block title %}Page with Menu{% endblock %}
+
+{% block content %}
+<div class="custom-container py-5">
+    <div class="row">
+        <!-- Left Sidebar Menu -->
+        <div class="col-12 col-md-2 mb-3 {% if removeRightMenu %}mt-3{% endif %}">
+            <div class="card overflow-hidden"
+                style="border-color: transparent !important; background-color: transparent !important; position: sticky; top: 5rem;">
+                <div class="card-body pt-3 " style="margin-top: -1rem;">
+                    <ul class="nav nav-link-secondary flex-column fw-bold gap-2">
+                        <li class="nav-item mb-1">
+                            <a class="nav-link {{ 'accent-color' if current_page == 'dashboard' else '' }}" 
+                                href="{{ url_for('admin.dashboard') }}">
+                                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item mb-1">
+                            <a class="nav-link {{ 'accent-color' if current_page == 'users' else '' }}" 
+                            href="{{ url_for('admin.users') }}">
+                                <i class="fas fa-users"></i> Users
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Page Content -->
+        <div class="col">
+            {% block page_content %}{% endblock %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}

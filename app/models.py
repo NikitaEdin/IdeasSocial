@@ -37,6 +37,8 @@ class User(db.Model, UserMixin):
     image_file = db.Column(db.String(20))
     displayname = db.Column(db.String(20))
     bio = db.Column(db.String(250))
+    # IS ADMIN
+    admin_status = db.Column(db.Boolean, default=False)
 
     posts = db.relationship('Post', backref='author', lazy=True)
     comments = db.relationship('Comment', backref='author', lazy=True)
@@ -148,6 +150,10 @@ class User(db.Model, UserMixin):
         return len(Post.query.filter_by(user_id=self.id).order_by(Post.date_posted.desc()).all())
 
 
+    # Is Admin?
+    def is_admin(self):
+        return self.admin_status
+
 ######################### POSTS related #########################
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -157,8 +163,9 @@ class Post(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-    # Link with LIKES
+    # Link with Likes and Comments
     likes = db.relationship('Like', backref='post', lazy='dynamic')
+    comments = db.relationship('Comment', backref='post', lazy=True)
 
 
     # ToString

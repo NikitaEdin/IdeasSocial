@@ -11,7 +11,8 @@ ENV/
 .ENV/
 
 # User Uploaded Images
-/app/static/profile_images/
+/app/static/profile_images/*
+!/app/static/profile_images/.gitkeep
 
 
 # Flask specific

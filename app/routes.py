@@ -110,7 +110,8 @@ def search():
         for post in posts:
             post.humanized_time = humanize.naturaltime(datetime.utcnow() - post.date_posted)
     else:
-        posts = []
+        flash('Invalid search query. Please enter a valid search term.', 'warning')
+        return redirect(url_for('home'))  # Redirect to home if the query is invalid
 
     return render_template('search_results.html', 
                            title='Search',

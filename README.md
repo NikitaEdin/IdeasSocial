@@ -28,13 +28,7 @@ The project demonstrates basic user interactions such as user creation, posting,
 - [Python 3.x](https://www.python.org/downloads/)
 
 ### Installation Steps
-- Clone the repo and execute the following commands in the Terminal _(within project root folder)_:
-- `python -m venv venv` to create a virtual environment.
-- `venv\Scripts\activate` to activate the venv.
-
-> [!NOTE]  
-> If scripts are disabled on your system, execute:<br>
-> `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Unrestricted`
-
-- `pip install -r requirements.txt` to install all dependencies.
-- `python run.py` - To launch the project.
+Choose your installation environment:
+- [Install on Windows via Visual Studio](./Docs/simpleInstall.md)
+- [Install on a simple ubuntu VM](./Docs/ubuntuInstall.md)
+- [Install on AWS EC2](./Docs/installAWS.md)

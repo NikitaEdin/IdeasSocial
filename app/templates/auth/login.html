@@ -2,7 +2,7 @@
 
 {% block page_content %}
 
-<div class="container d-flex justify-content-center align-items-center" style="height: 80vh;">
+<div class="container d-flex justify-content-center align-items-center" style="height: 80vh;" >
     <div class="border-2 rounded-3 p-3 bg-white shadow" style="max-width: 450px;"> 
         <div class="right-box">
             <div class="row align-items-center justify-content-center m-2">
@@ -34,7 +34,7 @@
                     <!-- Email -->
                     <div class="mb-3">
                         <label for="email" class="form-label py-0">Email Address:</label>
-                        {{ form.email(class="form-control bg-light fs-6", placeholder="john@smith.com") }}
+                        {{ form.email(class="form-control fs-6",placeholder="john@smith.com") }}
                         {% if form.email.errors %}
                             <div class="text-danger">
                                 {{ form.email.errors[0] }}
@@ -45,7 +45,7 @@
                     <!-- Password -->
                     <div class="mb-3">
                         <label for="password" class="form-label py-0">Password:</label>
-                        {{ form.password(class="form-control bg-light fs-6", placeholder="*********") }}
+                        {{ form.password(class="form-control fs-6", placeholder="*********") }}
                         {% if form.password.errors %}
                             <div class="text-danger">
                                 {{ form.password.errors[0] }}

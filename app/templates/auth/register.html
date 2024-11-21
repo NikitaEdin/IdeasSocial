@@ -2,7 +2,6 @@
 
 {% block page_content %}
 
-
 <div class="container mt-5 d-flex justify-content-center align-items-center" style="height: 80vh;">
     <div class="border-2 rounded-3 p-3 bg-white shadow" style="max-width: 450px;">
         <div class="col-d right-box">
@@ -19,7 +18,7 @@
                     <!-- Username -->
                     <div class="mb-3">
                         <label for="username" class="form-label my-0">Username:</label>
-                        {{ form.username(class="form-control bg-light fs-6", placeholder="JohnSmith") }}
+                        {{ form.username(class="form-control fs-6", placeholder="JohnSmith") }}
                         {% if form.username.errors %}
                             <div class="text-danger">
                                 {{ form.username.errors[0] }}
@@ -30,7 +29,7 @@
                     <!-- Email -->
                     <div class="mb-3">
                         <label for="email" class="form-label my-0">Email:</label>
-                        {{ form.email(class="form-control bg-light fs-6", placeholder="john@smith.com") }}
+                        {{ form.email(class="form-control fs-6", placeholder="john@smith.com") }}
                         {% if form.email.errors %}
                             <div class="text-danger">
                                 {{ form.email.errors[0] }}
@@ -41,7 +40,7 @@
                     <!-- Password -->
                     <div class="mb-3">
                         <label for="password" class="form-label my-0">Password:</label>
-                        {{ form.password(class="form-control bg-light fs-6", placeholder="********") }}
+                        {{ form.password(class="form-control fs-6", placeholder="********") }}
                         {% if form.password.errors %}
                             <div class="text-danger">
                                 {{ form.password.errors[0] }}
@@ -52,7 +51,7 @@
                     <!-- Confirm Password -->
                     <div class="mb-3">
                         <label for="confirm_password" class="form-label my-0">Confirm Password:</label>
-                        {{ form.confirm_password(class="form-control bg-light fs-6", placeholder="********") }}
+                        {{ form.confirm_password(class="form-control fs-6", placeholder="********") }}
                         {% if form.confirm_password.errors %}
                             <div class="text-danger">
                                 {{ form.confirm_password.errors[0] }}

@@ -1,5 +1,5 @@
 import humanize
-from flask import render_template, url_for, flash, redirect, request
+from flask import render_template, url_for, flash, redirect, request, session
 from app import app, db
 from app.forms import PostForm
 from app.models import User, Post
@@ -49,8 +49,14 @@ def home():
     for post in posts:
         post.humanized_time = humanize.naturaltime(datetime.utcnow() - post.date_posted)
 
+    # narrow_note = None
+    # if 'visited' not in session:
+    #     session['visited'] = True        
+    narrow_note="This is a university project, please refrain from using personal/sensitive information."
+
     return render_template("home.html", title='Home', current_page='home', 
-                           posts=posts, form=form, suggested_users=suggested_users)
+                           posts=posts, form=form, suggested_users=suggested_users, 
+                           narrow_note=narrow_note)
 
 
 
@@ -140,3 +146,6 @@ def terms_of_service():
 @app.route("/contact-us")
 def contact_us():
     return render_template('/info/contact_us.html', title='Contact') 
+
+
+
